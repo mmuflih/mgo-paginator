@@ -2,6 +2,7 @@ package mgopaginator
 
 import (
 	"fmt"
+	"math"
 
 	"gopkg.in/mgo.v2"
 )
@@ -45,9 +46,10 @@ func (mgp Paginator) Paginate(items interface{}) *PaginatorResponse {
 	return &PaginatorResponse{
 		Data: items,
 		Paginate: &PaginatorData{
-			Count: c,
-			Page:  mgp.Page,
-			Size:  mgp.Size,
+			Count:     c,
+			Page:      mgp.Page,
+			Size:      mgp.Size,
+			PageCount: int(math.Ceil(float64(c) / float64(mgp.Size))),
 		},
 	}
 }
@@ -66,7 +68,8 @@ type PaginatorResponse struct {
 }
 
 type PaginatorData struct {
-	Count int `json:"total"`
-	Page  int `json:"page"`
-	Size  int `json:"size"`
+	Count     int `json:"total"`
+	Page      int `json:"page"`
+	Size      int `json:"size"`
+	PageCount int `json:"page_count"`
 }
