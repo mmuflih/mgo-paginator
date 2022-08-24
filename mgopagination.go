@@ -43,13 +43,28 @@ func (mgp Paginator) Paginate(items interface{}) *PaginatorResponse {
 	if err != nil {
 		fmt.Println("Error Create Mgo Paginate", err)
 	}
+	totalPages := int(math.Ceil(float64(c) / float64(mgp.Size)))
+	var prevPage, nextPage *int
+	var page int = mgp.Page
+
+	if page > 1 {
+		np := page - 1
+		prevPage = &np
+	}
+	if page == totalPages {
+	} else {
+		np := page + 1
+		nextPage = &np
+	}
 	return &PaginatorResponse{
 		Data: items,
 		Paginate: &PaginatorData{
-			Count:     c,
-			Page:      mgp.Page,
-			Size:      mgp.Size,
-			PageCount: int(math.Ceil(float64(c) / float64(mgp.Size))),
+			Count:      c,
+			Page:       page,
+			Size:       mgp.Size,
+			TotalPages: totalPages,
+			NextPage:   nextPage,
+			PrevPage:   prevPage,
 		},
 	}
 }
@@ -68,8 +83,10 @@ type PaginatorResponse struct {
 }
 
 type PaginatorData struct {
-	Count     int `json:"total"`
-	Page      int `json:"page"`
-	Size      int `json:"size"`
-	PageCount int `json:"page_count"`
+	Count      int  `json:"total"`
+	Page       int  `json:"page"`
+	Size       int  `json:"size"`
+	TotalPages int  `json:"total_pages"`
+	NextPage   *int `json:"next_page"`
+	PrevPage   *int `json:"prev_page"`
 }
